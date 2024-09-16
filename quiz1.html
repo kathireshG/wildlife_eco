@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quiz App</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f4f4f4;
+      }
+      .quiz-container {
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+      }
+      .quiz-container h2,
+      .quiz-container h3 {
+        text-align: center;
+      }
+      .home-button {
+        display: block;
+        background-color: #3498db;
+        color: white;
+        padding: 10px;
+        margin-bottom: 20px;
+        text-align: center;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+      .question {
+        margin-bottom: 20px;
+      }
+      .question-number {
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+      .options {
+        list-style: none;
+        padding: 0;
+      }
+      .options li {
+        background-color: #f9f9f9;
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s, border 0.3s;
+      }
+      .options li:hover {
+        background-color: #e0e0e0;
+      }
+      .selected {
+        background-color: #d3d3d3; /* Highlight selected option in grey */
+      }
+      .correct {
+        border: 2px solid green;
+      }
+      .incorrect {
+        border: 2px solid red;
+      }
+      button {
+        background-color: #4caf50;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: #45a049;
+      }
+      @media only screen and (max-width: 600px) {
+        .quiz-container {
+          width: 90%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <a href="/index.html" class="home-button">Home</a>
+    <div class="quiz-container">
+      <h3>Week 1</h3>
+      <h2>Quiz</h2>
+      <div id="quiz"></div>
+      <button onclick="submitQuiz()">Submit</button>
+      <p id="score"></p>
+    </div>
+
+    <script>
+      const quizData = [
+        {
+          question: '"Enquiry into plants" is a book written by:',
+          options: ["Theophrastus", "Linnaeus", "Malthus", "Humboldt"],
+          correct: "Theophrastus",
+        },
+        {
+          question: "In the Greek word root of Ecology, Oikos refers to:",
+          options: ["household", "preservation", "environment", "study"],
+          correct: "household",
+        },
+        {
+          question: "In the Greek word root of Ecology, logos refers to:",
+          options: ["household", "preservation", "environment", "study"],
+          correct: "study",
+        },
+        {
+          question:
+            "Ecology is the scientific study of interactions among organisms and their _____.",
+          options: ["habitat", "niche", "environment", "population"],
+          correct: "environment",
+        },
+        {
+          question:
+            "Who amongst these is considered the father of Biogeography?",
+          options: ["Theophrastus", "Linnaeus", "Malthus", "Humboldt"],
+          correct: "Humboldt",
+        },
+      ];
+
+      let userAnswers = Array(quizData.length).fill(null);
+
+      function loadQuiz() {
+        const quizContainer = document.getElementById("quiz");
+        quizContainer.innerHTML = "";
+
+        quizData.forEach((quizItem, questionIndex) => {
+          const questionEl = document.createElement("div");
+          questionEl.className = "question";
+          questionEl.innerHTML = `<div class="question-number">Question ${
+            questionIndex + 1
+          }</div><p>${quizItem.question}</p>`;
+
+          const shuffledOptions = quizItem.options.sort(
+            () => Math.random() - 0.5
+          );
+          const optionsList = document.createElement("ul");
+          optionsList.className = "options";
+
+          shuffledOptions.forEach((option, optionIndex) => {
+            const optionItem = document.createElement("li");
+            optionItem.innerHTML = option;
+            optionItem.onclick = () =>
+              selectOption(questionIndex, optionIndex, optionItem);
+            optionsList.appendChild(optionItem);
+          });
+
+          questionEl.appendChild(optionsList);
+          quizContainer.appendChild(questionEl);
+        });
+      }
+
+      function selectOption(questionIndex, optionIndex, optionElement) {
+        // Deselect any previously selected options in the same question
+        const optionsList = optionElement.parentElement;
+        Array.from(optionsList.children).forEach((child) =>
+          child.classList.remove("selected")
+        );
+
+        // Add the selected class to the clicked option
+        optionElement.classList.add("selected");
+
+        // Store the selected option for this question
+        userAnswers[questionIndex] = optionElement.innerHTML;
+      }
+
+      function submitQuiz() {
+        quizData.forEach((quizItem, questionIndex) => {
+          const optionsList =
+            document.querySelectorAll(".options")[questionIndex];
+          const selectedOption = userAnswers[questionIndex];
+          const correctAnswer = quizItem.correct;
+
+          // Highlight the correct and incorrect answers
+          Array.from(optionsList.children).forEach((optionItem) => {
+            if (optionItem.innerHTML === correctAnswer) {
+              optionItem.classList.add("correct");
+            } else if (optionItem.innerHTML === selectedOption) {
+              optionItem.classList.add("incorrect");
+            }
+          });
+        });
+
+        calculateScore();
+      }
+
+      function calculateScore() {
+        let score = 0;
+        quizData.forEach((quizItem, index) => {
+          if (userAnswers[index] === quizItem.correct) {
+            score++;
+          }
+        });
+        document.getElementById(
+          "score"
+        ).innerText = `You scored ${score}/${quizData.length}`;
+      }
+
+      loadQuiz();
+    </script>
+  </body>
+</html>
