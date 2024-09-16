@@ -17,7 +17,7 @@
         background-color: white;
         padding: 20px;
         border-radius: 10px;
-        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        box-shadow: 0px 0px 10px rgba(0, 0, 0,   0.1);
       }
       .quiz-container h1 {
         text-align: center;
@@ -32,7 +32,7 @@
         margin-bottom: 10px;
         border-radius: 5px;
         cursor: pointer;
-        transition: background-color 0.3s, border 0.3s;
+        transition: background-color 0.3s,   border 0.3s;
       }
       .quiz-options li:hover {
         background-color: #e0e0e0;
@@ -47,10 +47,29 @@
     <div class="quiz-container">
       <h1>Wildlife Ecology</h1>
       <ul class="quiz-options">
-        <li><a href="quiz1.html">Week 1 Quiz</a></li>
-        <li><a href="quiz2.html">Week 2 Quiz</a></li>
-        <li><a href="quiz12.html">Week 12 Quiz</a></li>
+        <li><a href="quiz1.html" id="quiz1-link">Week 1 Quiz</a></li>
+        <li><a href="quiz2.html" id="quiz2-link">Week 2 Quiz</a></li>
+        <li><a href="quiz12.html" id="quiz12-link">Week 12 Quiz</a></li>
       </ul>
     </div>
+
+    <script>
+      // Get all link elements
+      const links = document.querySelectorAll(".quiz-options a");
+
+      // Add click event listeners to each link
+      links.forEach((link) => {
+        link.addEventListener("click", (event) => {
+          // Prevent default link behavior
+          event.preventDefault();
+
+          // Get the href attribute of the clicked link
+          const href = link.getAttribute("href");
+
+          // Navigate to the specified URL
+          window.location.href = href;
+        });
+      });
+    </script>
   </body>
 </html>

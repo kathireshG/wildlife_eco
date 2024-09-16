@@ -122,10 +122,50 @@
           options: ["Theophrastus", "Linnaeus", "Malthus", "Humboldt"],
           correct: "Humboldt",
         },
+        {
+          question: "Which of these is not a characteristic of fitness?",
+          options: [
+            "Fitness id environment-specific",
+            "Fitness is species-specific",
+            "Higher reproductive rate means higher fitness",
+            "Fitness should be measured across several generations",
+          ],
+          correct: "Higher reproductive rate means higher fitness",
+        },
+        {
+          question: "Which of these is not a kind of selection:",
+          options: ["directional", "stochastic", "disruptive", "stabilising"],
+          correct: "stochastic",
+        },
+        {
+          question:
+            "Ecology is the scientific study of _______ that determine the distribution and abundance of organisms.",
+          options: ["statics", "interactions", "dynamics", "habitat"],
+          correct: "interactions",
+        },
+        {
+          question: "Which of these is not a characteristic of fitness?",
+          options: [
+            "Fitness is environment-specific.",
+            "Fitness is species-specific.",
+            "Fitness works on traits such as size and speed.",
+            "Fitness should be measured across several generations.",
+          ],
+          correct: "Fitness works on traits such as size and speed.",
+        },
+        {
+          question: "Which of these is not a step in natural selection?",
+          options: [
+            "variation",
+            "underpopulation",
+            "struggle for existence",
+            "survival of the fittest",
+          ],
+          correct: "underpopulation",
+        },
       ];
 
-      let userAnswers = Array(quizData.length).fill(null);
-
+      let selectedAnswers = {}; // Track selected answers
       function loadQuiz() {
         const quizContainer = document.getElementById("quiz");
         quizContainer.innerHTML = "";
@@ -146,8 +186,10 @@
           shuffledOptions.forEach((option, optionIndex) => {
             const optionItem = document.createElement("li");
             optionItem.innerHTML = option;
+            optionItem.setAttribute("data-question-index", questionIndex);
+            optionItem.setAttribute("data-option", option);
             optionItem.onclick = () =>
-              selectOption(questionIndex, optionIndex, optionItem);
+              selectOption(questionIndex, option, optionItem);
             optionsList.appendChild(optionItem);
           });
 
@@ -156,33 +198,36 @@
         });
       }
 
-      function selectOption(questionIndex, optionIndex, optionElement) {
-        // Deselect any previously selected options in the same question
-        const optionsList = optionElement.parentElement;
-        Array.from(optionsList.children).forEach((child) =>
-          child.classList.remove("selected")
+      function selectOption(questionIndex, selectedOption, optionElement) {
+        // Deselect previously selected option for the current question
+        const options = document.querySelectorAll(
+          `[data-question-index="${questionIndex}"]`
         );
+        options.forEach((option) => option.classList.remove("selected"));
 
-        // Add the selected class to the clicked option
+        // Select the clicked option
         optionElement.classList.add("selected");
-
-        // Store the selected option for this question
-        userAnswers[questionIndex] = optionElement.innerHTML;
+        selectedAnswers[questionIndex] = selectedOption; // Store selected answer
+        // Highlight the selected option
+        optionElement.style.backgroundColor = "#d3d3d3";
       }
 
       function submitQuiz() {
         quizData.forEach((quizItem, questionIndex) => {
-          const optionsList =
-            document.querySelectorAll(".options")[questionIndex];
-          const selectedOption = userAnswers[questionIndex];
+          const optionsList = document.querySelectorAll(
+            `[data-question-index="${questionIndex}"]`
+          );
           const correctAnswer = quizItem.correct;
+          const userAnswer = selectedAnswers[questionIndex];
 
-          // Highlight the correct and incorrect answers
-          Array.from(optionsList.children).forEach((optionItem) => {
-            if (optionItem.innerHTML === correctAnswer) {
-              optionItem.classList.add("correct");
-            } else if (optionItem.innerHTML === selectedOption) {
-              optionItem.classList.add("incorrect");
+          optionsList.forEach((optionElement) => {
+            const option = optionElement.getAttribute("data-option");
+
+            // Highlight correct answer in green, incorrect in red
+            if (option === correctAnswer) {
+              optionElement.classList.add("correct");
+            } else if (option === userAnswer) {
+              optionElement.classList.add("incorrect");
             }
           });
         });
@@ -192,8 +237,8 @@
 
       function calculateScore() {
         let score = 0;
-        quizData.forEach((quizItem, index) => {
-          if (userAnswers[index] === quizItem.correct) {
+        quizData.forEach((quizItem, questionIndex) => {
+          if (selectedAnswers[questionIndex] === quizItem.correct) {
             score++;
           }
         });
