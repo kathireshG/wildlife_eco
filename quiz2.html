@@ -94,7 +94,7 @@
     </div>
 
     <script>
-      const quizData = [
+      const quizData1 = [
         {
           question:
             "Hierarchy emerges almost inevitably through a wide variety of evolutionary processes, for the simple reason that hierarchical structures are _____",
@@ -169,6 +169,12 @@
           correct: "intermediate",
         },
       ];
+
+      function shuffleQuestions(quizArray) {
+        return quizArray.sort(() => Math.random() - 0.5);
+      }
+
+      const quizData = shuffleQuestions(quizData1);
 
       let selectedAnswers = {}; // Track selected answers
       function loadQuiz() {

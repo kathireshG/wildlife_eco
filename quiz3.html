@@ -94,7 +94,7 @@
     </div>
 
     <script>
-      const quizData2 = [
+      const quizData1 = [
         {
           question: "Birds on giraffe are an example of",
           options: [
@@ -191,6 +191,12 @@
           correct: "allo grooming",
         },
       ];
+
+      function shuffleQuestions(quizArray) {
+        return quizArray.sort(() => Math.random() - 0.5);
+      }
+
+      const quizData = shuffleQuestions(quizData1);
 
       let selectedAnswers = {}; // Track selected answers
       function loadQuiz() {

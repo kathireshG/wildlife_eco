@@ -94,7 +94,7 @@
     </div>
 
     <script>
-      const quizData = [
+      const quizData1 = [
         {
           question: '"Enquiry into plants" is a book written by:',
           options: ["Theophrastus", "Linnaeus", "Malthus", "Humboldt"],
@@ -165,7 +165,12 @@
         },
       ];
 
-      let selectedAnswers = {}; // Track selected answers
+      function shuffleQuestions(quizArray) {
+        return quizArray.sort(() => Math.random() - 0.5);
+      }
+
+      const quizData = shuffleQuestions(quizData1);
+      console.log(quizData);
       function loadQuiz() {
         const quizContainer = document.getElementById("quiz");
         quizContainer.innerHTML = "";
