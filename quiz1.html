@@ -170,7 +170,8 @@
       }
 
       const quizData = shuffleQuestions(quizData1);
-      console.log(quizData);
+
+      let selectedAnswers = {}; // Track selected answers
       function loadQuiz() {
         const quizContainer = document.getElementById("quiz");
         quizContainer.innerHTML = "";
