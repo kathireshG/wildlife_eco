@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quiz App</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f4f4f4;
+      }
+      .quiz-container {
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+      }
+      .quiz-container h2,
+      .quiz-container h3 {
+        text-align: center;
+      }
+      .home-button {
+        display: block;
+        background-color: #3498db;
+        color: white;
+        padding: 10px;
+        margin-bottom: 20px;
+        text-align: center;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+      .question {
+        margin-bottom: 20px;
+      }
+      .question-number {
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+      .options {
+        list-style: none;
+        padding: 0;
+      }
+      .options li {
+        background-color: #f9f9f9;
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s, border 0.3s;
+      }
+      .options li:hover {
+        background-color: #e0e0e0;
+      }
+      .selected {
+        background-color: #d3d3d3; /* Highlight selected option in grey */
+      }
+      .correct {
+        border: 2px solid green;
+      }
+      .incorrect {
+        border: 2px solid red;
+      }
+      button {
+        background-color: #4caf50;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: #45a049;
+      }
+      @media only screen and (max-width: 600px) {
+        .quiz-container {
+          width: 90%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <a href="/index.html" class="home-button">Home</a>
+    <div class="quiz-container">
+      <h3>Week 2</h3>
+      <h2>Quiz</h2>
+      <div id="quiz"></div>
+      <button onclick="submitQuiz()">Submit</button>
+      <p id="score"></p>
+    </div>
+
+    <script>
+      const quizData = [
+        {
+          question:
+            "Hierarchy emerges almost inevitably through a wide variety of evolutionary processes, for the simple reason that hierarchical structures are _____",
+          options: ["perfect", "imperfect", "stable", "unstable"],
+          correct: "stable",
+        },
+        {
+          question: "The mitochondrion is a/an",
+          options: ["sub-cellular organelle", "cell", "tissue", "organ"],
+          correct: "sub-cellular organelle",
+        },
+        {
+          question: "The laboratory approach to ecology uses",
+          options: ["equations", "models", "observations", "experiments"],
+          correct: "experiments",
+        },
+        {
+          question:
+            '"The diversity that exists among different geographies" is',
+          options: [
+            "alpha biodiversity",
+            "beta biodiversity",
+            "gamma biodiversity",
+            "delta biodiversity",
+          ],
+          correct: "gamma biodiversity",
+        },
+        {
+          question: "The hierarchical system was given by",
+          options: ["simon", "watson", "hutchinson", "humboldt"],
+          correct: "simon",
+        },
+        {
+          question:
+            '"Groups of actually or potentially interbreeding natural populations, which are reproductively isolated from other such species" is a definition of',
+          options: ["cells", "species", "ecosystems", "biomes"],
+          correct: "species",
+        },
+        {
+          question: '"The diversity that exists within an ecosystem" is',
+          options: [
+            "alpha biodiversity",
+            "beta biodiversity",
+            "gamma biodiversity",
+            "delta biodiversity",
+          ],
+          correct: "alpha biodiversity",
+        },
+        {
+          question: "The emergent principle can be stated as",
+          options: [
+            "whole = sum of parts",
+            "whole < sum of parts",
+            "whole > sum of parts",
+            "none of these",
+          ],
+          correct: "whole > sum of parts",
+        },
+        {
+          question: "There is more biodiversity in areas with",
+          options: [
+            "less competition, less predation",
+            "less competition, more predation",
+            "more competition, more predation",
+            "more competition, less predation",
+          ],
+          correct: "more competition, more predation",
+        },
+        {
+          question: "For more biodiversity, the level of disturbance should be",
+          options: ["less", "intermediate", "more", "none of these"],
+          correct: "intermediate",
+        },
+      ];
+
+      let selectedAnswers = {}; // Track selected answers
+      function loadQuiz() {
+        const quizContainer = document.getElementById("quiz");
+        quizContainer.innerHTML = "";
+
+        quizData.forEach((quizItem, questionIndex) => {
+          const questionEl = document.createElement("div");
+          questionEl.className = "question";
+          questionEl.innerHTML = `<div class="question-number">Question ${
+            questionIndex + 1
+          }</div><p>${quizItem.question}</p>`;
+
+          const shuffledOptions = quizItem.options.sort(
+            () => Math.random() - 0.5
+          );
+          const optionsList = document.createElement("ul");
+          optionsList.className = "options";
+
+          shuffledOptions.forEach((option, optionIndex) => {
+            const optionItem = document.createElement("li");
+            optionItem.innerHTML = option;
+            optionItem.setAttribute("data-question-index", questionIndex);
+            optionItem.setAttribute("data-option", option);
+            optionItem.onclick = () =>
+              selectOption(questionIndex, option, optionItem);
+            optionsList.appendChild(optionItem);
+          });
+
+          questionEl.appendChild(optionsList);
+          quizContainer.appendChild(questionEl);
+        });
+      }
+
+      function selectOption(questionIndex, selectedOption, optionElement) {
+        // Deselect previously selected option for the current question
+        const options = document.querySelectorAll(
+          `[data-question-index="${questionIndex}"]`
+        );
+        options.forEach((option) => option.classList.remove("selected"));
+
+        // Select the clicked option
+        optionElement.classList.add("selected");
+        selectedAnswers[questionIndex] = selectedOption; // Store selected answer
+        // Highlight the selected option
+        optionElement.style.backgroundColor = "#d3d3d3";
+      }
+
+      function submitQuiz() {
+        quizData.forEach((quizItem, questionIndex) => {
+          const optionsList = document.querySelectorAll(
+            `[data-question-index="${questionIndex}"]`
+          );
+          const correctAnswer = quizItem.correct;
+          const userAnswer = selectedAnswers[questionIndex];
+
+          optionsList.forEach((optionElement) => {
+            const option = optionElement.getAttribute("data-option");
+
+            // Highlight correct answer in green, incorrect in red
+            if (option === correctAnswer) {
+              optionElement.classList.add("correct");
+            } else if (option === userAnswer) {
+              optionElement.classList.add("incorrect");
+            }
+          });
+        });
+
+        calculateScore();
+      }
+
+      function calculateScore() {
+        let score = 0;
+        quizData.forEach((quizItem, questionIndex) => {
+          if (selectedAnswers[questionIndex] === quizItem.correct) {
+            score++;
+          }
+        });
+        document.getElementById(
+          "score"
+        ).innerText = `You scored ${score}/${quizData.length}`;
+      }
+
+      loadQuiz();
+    </script>
+  </body>
+</html>
